@@ -1,0 +1,10 @@
+.signUp {
+  border-radius: 50px;
+  background: #e0e0e0;
+  box-shadow: -32px -32px 63px #bebebe, 32px 32px 63px #ffffff;
+}
+.input {
+  border-radius: 50px;
+  background: #e0e0e0;
+  box-shadow: inset -5px 5px 10px #bebebe, inset 5px -5px 10px #ffffff;
+}
