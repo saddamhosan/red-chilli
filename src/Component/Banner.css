@@ -1,0 +1,5 @@
+.banner {
+  background-image: url(../images/bannerbackground.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
