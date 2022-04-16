@@ -15,7 +15,7 @@ const Home = () => {
             className={({ isActive }) =>
               isActive ? "border-b-2 border-red-400" : ""
             }
-            to="/breakfast"
+            to="/"
           >
             Breakfast
           </NavLink>

@@ -1,43 +1,66 @@
 import React, { useState } from "react";
-import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import auth from './../../firebase.init';
-import './Sign.css';
+import {
+  useCreateUserWithEmailAndPassword,
+  useUpdateProfile
+} from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
+import auth from "./../../firebase.init";
+import "./Sign.css";
 
 const SignUp = () => {
-  const [name,setName]=useState('')
-  const [email,setEmail]=useState('')
-  const [password,setPassword]=useState('')
-  const [confirmPassword,setConfirmPassword]=useState('')
-const [createUserWithEmailAndPassword, user, loading, error] =
-  useCreateUserWithEmailAndPassword(auth);
-  const handleName=(e)=>{
-    
-  }
-  const handleEmail=(e)=>{
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth, { sendEmailVerification: true });
+
+  const [updateProfile, updating, updateError] = useUpdateProfile(auth);
+
+  const handleName = (e) => {
+    setName(e.target.value);
+  };
+
+  const handleEmail = (e) => {
     const email = e.target.value;
     const emailRegEx = /\S+@\S+\.\S+/;
     const testedEmail = emailRegEx.test(email);
-    if(testedEmail){
+    if (testedEmail) {
       setEmail(e.target.value);
-    }else{
-      console.log('please enter valid email');
+    } else {
+      console.log("please enter valid email");
     }
-  }
-  console.log(email);
-  const handlePassword=(e)=>{
+  };
 
-  }
-  const handleConfirmPassword=(e)=>{
+  const handlePassword = (e) => {
+    const password = e.target.value;
+    const passwordRegEx = /.{6,}/;
+    const testedPassword = passwordRegEx.test(password);
+    if (testedPassword) {
+      setPassword(password);
+    } else {
+      console.log("set password minimum six character");
+    }
+  };
 
-  }
+  const handleConfirmPassword = (e) => {
+    setConfirmPassword(e.target.value);
+  };
 
-  const handleSubmit=(e)=>{
-    e.preventDefault()
-    const name=e.target.name.value
-    
-    const password=e.target.password.value
-    const confirmPassword = e.target.confirmPassword.value;
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      console.log("confirm password not match");
+      return;
+    }
+    await createUserWithEmailAndPassword(email, password);
+    await updateProfile({ displayName: name });
+  };
+  if (user) {
+    console.log(user);
+    navigate("/");
   }
 
   return (
@@ -49,6 +72,7 @@ const [createUserWithEmailAndPassword, user, loading, error] =
             Name
           </label>
           <input
+            onBlur={handleName}
             className="border w-full pl-3 input  text-xl"
             type="text"
             name="name"
@@ -59,7 +83,7 @@ const [createUserWithEmailAndPassword, user, loading, error] =
             Email
           </label>
           <input
-          onBlur={handleEmail}
+            onBlur={handleEmail}
             className="border w-full pl-3 input text-xl"
             type="email"
             name="email"
@@ -70,6 +94,7 @@ const [createUserWithEmailAndPassword, user, loading, error] =
             Password
           </label>
           <input
+            onBlur={handlePassword}
             className="border w-full pl-3 input  text-xl"
             type="password"
             name="password"
@@ -80,11 +105,22 @@ const [createUserWithEmailAndPassword, user, loading, error] =
             Confirm Password
           </label>
           <input
+            onBlur={handleConfirmPassword}
             className="border w-full pl-3 input  text-xl"
             type="password"
             name="confirmPassword"
           />
         </div>
+        {(loading || updating) && (
+          <div className="text-center border-blue-600">
+            <ClipLoader />
+          </div>
+        )}
+        {(error || updateError) && (
+          <p className="text-red-500">
+            Error: {error?.message} {updateError?.message}
+          </p>
+        )}
         <div className="flex justify-center">
           <input
             className="bg-indigo-500 px-6 py-2 text-white font-bold rounded-lg"

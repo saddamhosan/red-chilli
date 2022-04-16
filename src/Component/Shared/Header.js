@@ -1,10 +1,14 @@
+import { signOut } from "firebase/auth";
 import React, { useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Link, NavLink } from "react-router-dom";
+import auth from "../../firebase.init";
 
 const Header = () => {
   let [open, setOpen] = useState(false);
+  const [user] = useAuthState(auth);
   return (
     <div className="shadow-md w-full fixed top-0 left-0">
       <div className="h-16 md:flex items-center justify-between bg-white py-4 md:px-10 px-7">
@@ -37,6 +41,15 @@ const Header = () => {
           </li>
 
           <li className="md:ml-8 text-xl md:my-0 my-7">
+            {user?.uid? <button onClick={()=>signOut(auth)}>sign out</button> : <NavLink
+              className="text-gray-800 hover:text-gray-400 duration-500"
+              to="signIn"
+            >
+              Sign In
+            </NavLink>}
+          </li>
+
+          <li className="md:ml-8 text-xl md:my-0 my-7">
             <NavLink
               className="text-gray-800 hover:text-gray-400 duration-500"
               to="signUp"
@@ -44,15 +57,7 @@ const Header = () => {
               Sign Up
             </NavLink>
           </li>
-
-          <li className="md:ml-8 text-xl md:my-0 my-7">
-            <NavLink
-              className="text-gray-800 hover:text-gray-400 duration-500"
-              to="signIn"
-            >
-              Sign In
-            </NavLink>
-          </li>
+        {user?.uid && <p className="ml-6">{user?.displayName}</p>}
         </ul>
       </div>
     </div>
